@@ -1,0 +1,129 @@
+[project]
+name = "fireflyframework-intellidoc"
+version = "26.02.01"
+description = "Intelligent Document Processing framework powered by VLMs/LLMs, built on pyfly and fireflyframework-genai."
+readme = "README.md"
+license = { text = "Apache-2.0" }
+authors = [
+    { name = "Firefly Software Solutions Inc" }
+]
+maintainers = [
+    { name = "Firefly Software Solutions Inc" }
+]
+requires-python = ">=3.13"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Framework :: AsyncIO",
+    "Framework :: Pydantic :: 2",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Image Recognition",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Typing :: Typed",
+]
+keywords = [
+    "idp", "document-processing", "ocr", "vlm", "llm",
+    "extraction", "classification", "intelligent-document-processing",
+    "genai", "computer-vision", "framework",
+]
+
+dependencies = [
+    "pyfly>=0.1.0",
+    "fireflyframework-genai>=26.02.06",
+    "Pillow>=10.0",
+    "pymupdf>=1.24.0",
+    "pydantic>=2.10.0",
+]
+
+[project.optional-dependencies]
+pdf-images = [
+    "pdf2image>=1.17",
+]
+ocr = [
+    "pytesseract>=0.3.10",
+]
+barcode = [
+    "pyzbar>=0.1.9",
+    "python-barcode>=0.15",
+]
+s3 = [
+    "aioboto3>=13.0",
+]
+azure = [
+    "azure-storage-blob[aio]>=12.20",
+]
+gcs = [
+    "gcloud-aio-storage>=9.0",
+]
+postgresql = [
+    "pyfly[data-relational,postgresql]",
+]
+mongodb = [
+    "pyfly[data-document]",
+]
+web = [
+    "pyfly[web]",
+]
+messaging = [
+    "pyfly[kafka,rabbitmq]",
+]
+observability = [
+    "pyfly[observability]",
+    "fireflyframework-genai[rest]",
+]
+security = [
+    "pyfly[security]",
+]
+all = [
+    "fireflyframework-intellidoc[pdf-images,s3,azure,gcs,postgresql,web,messaging,observability,security]",
+]
+dev = [
+    "fireflyframework-intellidoc[all,ocr,barcode]",
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+    "pytest-cov>=6.0.0",
+    "testcontainers>=4.10.0",
+    "ruff>=0.9.0",
+    "pyright>=1.1.0",
+    "httpx>=0.28.0",
+]
+
+[project.urls]
+Homepage = "https://fireflyframework.org/"
+Documentation = "https://github.com/fireflyframework/fireflyframework-intellidoc/tree/main/docs"
+Repository = "https://github.com/fireflyframework/fireflyframework-intellidoc"
+Issues = "https://github.com/fireflyframework/fireflyframework-intellidoc/issues"
+Changelog = "https://github.com/fireflyframework/fireflyframework-intellidoc/blob/main/CHANGELOG.md"
+
+[project.entry-points."pyfly.auto_configuration"]
+intellidoc = "fireflyframework_intellidoc.auto_configuration:IntelliDocAutoConfiguration"
+
+[build-system]
+requires = ["uv_build>=0.9.5,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.ruff]
+target-version = "py313"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "SIM", "TC"]
+ignore = ["E501", "TC001", "TC002", "TC003", "UP040", "UP046", "B008"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["fireflyframework_intellidoc"]
+
+[tool.pyright]
+pythonVersion = "3.13"
+typeCheckingMode = "basic"
+include = ["src"]
+exclude = ["tests/**", "examples/**"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+pythonpath = ["src"]
