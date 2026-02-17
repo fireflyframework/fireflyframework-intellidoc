@@ -7,8 +7,8 @@
 ---
 
 This guide provides complete examples for common IDP use cases. Each example
-shows how to create the document type, define the extraction schema, set up
-validators, and process documents.
+shows how to create the document type, define catalog fields, assign default
+fields, set up validators, and process documents.
 
 ## 1. Invoice Processing
 
@@ -579,3 +579,140 @@ curl -X POST http://localhost:8080/api/v1/intellidoc/process \
 This narrows the classification to only consider document types with
 nature `financial` (e.g., invoice, receipt, bank statement, tax form),
 improving accuracy and speed.
+
+---
+
+## 10. Using Inline Fields (Ad-Hoc Extraction)
+
+Extract fields that aren't in the catalog using inline definitions:
+
+```bash
+curl -X POST http://localhost:8080/api/v1/intellidoc/process \
+  -H "Content-Type: application/json" \
+  -d '{
+    "source_type": "local",
+    "source_reference": "/uploads/receipt.jpg",
+    "filename": "receipt.jpg",
+    "target_schema": {
+      "field_codes": ["vendor_name", "total_amount"],
+      "inline_fields": [
+        {
+          "name": "payment_method",
+          "display_name": "Payment Method",
+          "field_type": "text",
+          "description": "How the purchase was paid (cash, credit card, etc.)"
+        },
+        {
+          "name": "store_location",
+          "display_name": "Store Location",
+          "field_type": "address",
+          "description": "Physical address of the store"
+        }
+      ]
+    }
+  }'
+```
+
+This combines catalog fields (`vendor_name`, `total_amount`) with ad-hoc inline fields (`payment_method`, `store_location`). Inline fields are useful for one-off extractions or experiments before promoting a field to the catalog.
+
+---
+
+## 11. Field-Level Validation Rules
+
+Embed validation rules directly in catalog field definitions using `validation_rules`.
+These travel with the field and run automatically during the validation step — no need
+to create separate `ValidatorDefinition` entries for simple per-field checks.
+
+### Fields with Embedded Validation
+
+```bash
+# Email field with format validation
+curl -X POST http://localhost:8080/api/v1/intellidoc/fields \
+  -H "Content-Type: application/json" \
+  -d '{
+    "code": "contact_email",
+    "display_name": "Contact Email",
+    "field_type": "email",
+    "required": true,
+    "validation_rules": [
+      {
+        "rule_type": "required",
+        "severity": "error",
+        "message": "Contact email is required"
+      },
+      {
+        "rule_type": "format",
+        "severity": "error",
+        "config": {"type": "email"},
+        "message": "Must be a valid email address"
+      }
+    ]
+  }'
+
+# Numeric field with range validation
+curl -X POST http://localhost:8080/api/v1/intellidoc/fields \
+  -H "Content-Type: application/json" \
+  -d '{
+    "code": "discount_percent",
+    "display_name": "Discount Percentage",
+    "field_type": "number",
+    "min_value": 0,
+    "max_value": 100,
+    "validation_rules": [
+      {
+        "rule_type": "range",
+        "severity": "error",
+        "config": {"min": 0, "max": 100},
+        "message": "Discount must be between 0% and 100%"
+      }
+    ]
+  }'
+
+# Text field with regex format validation
+curl -X POST http://localhost:8080/api/v1/intellidoc/fields \
+  -H "Content-Type: application/json" \
+  -d '{
+    "code": "po_number",
+    "display_name": "Purchase Order Number",
+    "field_type": "text",
+    "validation_rules": [
+      {
+        "rule_type": "format",
+        "severity": "warning",
+        "config": {"type": "regex", "pattern": "^PO-\\d{4,8}$"},
+        "message": "PO number should match PO-XXXX format"
+      }
+    ]
+  }'
+
+# IBAN field with checksum validation
+curl -X POST http://localhost:8080/api/v1/intellidoc/fields \
+  -H "Content-Type: application/json" \
+  -d '{
+    "code": "bank_iban",
+    "display_name": "Bank IBAN",
+    "field_type": "text",
+    "validation_rules": [
+      {
+        "rule_type": "checksum",
+        "severity": "error",
+        "config": {"type": "iban"},
+        "message": "Invalid IBAN — checksum verification failed"
+      }
+    ]
+  }'
+```
+
+### When to Use Field-Level vs Document-Type Validators
+
+| Use case | Approach | Why |
+|---|---|---|
+| Field format check (email, regex, IBAN) | Field-level `validation_rules` | Rule belongs with the field definition and applies everywhere the field is used |
+| Required field check | Field-level `validation_rules` | Tied to the field semantics, not the document type |
+| Cross-field logic (total = subtotal + tax) | Document-type `ValidatorDefinition` | Involves multiple fields — can't be attached to a single field |
+| Visual check (signature present) | Document-type `ValidatorDefinition` | Relates to the document as a whole, not a specific field |
+| Business rule (discount < 30% of subtotal) | Document-type `ValidatorDefinition` | Complex expression spanning multiple fields |
+
+Both levels run through the same `ValidationEngine` and produce the same `ValidationResult`
+objects. Field-level rules are automatically converted to ephemeral `ValidatorDefinition`
+objects at validation time, scoped to the field's code via `applicable_fields`.
