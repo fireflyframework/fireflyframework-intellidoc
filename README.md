@@ -1,10 +1,16 @@
-# fireflyframework-intellidoc
+<p align="center">
+  <img src="docs/images/logo.png" alt="IntelliDoc" width="500">
+</p>
 
-**Intelligent Document Processing framework powered by Vision-Language Models.**
+<p align="center">
+  <strong>Intelligent Document Processing framework powered by Vision-Language Models</strong>
+</p>
 
-Built on [pyfly](https://github.com/fireflyframework/pyfly) and [fireflyframework-genai](https://github.com/fireflyframework/fireflyframework-genai).
-
-> Copyright 2026 Firefly Software Solutions Inc — Apache License 2.0
+<p align="center">
+  <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-%3E%3D3.13-blue?logo=python&logoColor=white" alt="Python 3.13+"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-green" alt="License"></a>
+  <a href="https://github.com/fireflyframework/fireflyframework-intellidoc/releases"><img src="https://img.shields.io/badge/version-26.02.02-orange" alt="Version"></a>
+</p>
 
 ---
 
@@ -18,101 +24,90 @@ Everything is runtime-configurable: document types, field definitions, validatio
 processing strategies are managed through REST APIs — no code changes or redeployments needed to
 support new document types.
 
+Built on [pyfly](https://github.com/fireflyframework/pyfly) and [fireflyframework-genai](https://github.com/fireflyframework/fireflyframework-genai).
+
 ## Key Features
 
+<table>
+<tr>
+<td width="50%" valign="top">
+
 ### Catalog-Driven Design
-- Define document types, field definitions, and validators at runtime via REST APIs
-- No code changes needed to add support for new document types
-- Visual descriptions and classification cues guide VLM understanding
+- Define document types, fields, and validators at runtime via REST APIs
 - Reusable fields catalog with 12 field types and embedded validation rules
+- Visual descriptions and classification cues guide VLM understanding
 - Composable validation rules with 9 validator types
+
+</td>
+<td width="50%" valign="top">
 
 ### VLM-First Processing
 - Send document page images directly to Vision-Language Models
 - No OCR dependency — works with handwritten, poor-quality, and complex-layout documents
-- VLM-powered document boundary detection for multi-document files
 - VLM-powered visual validation (signature, stamp, photo, watermark detection)
 - Field-driven structured extraction with confidence scores
 
-### Complete Processing Pipeline
-```
-Ingest → Preprocess → Split → Classify → Extract → Validate → Persist
-```
-- **Ingest**: Local files, URLs, S3, Azure Blob, GCS
-- **Preprocess**: PDF→images, rotation correction, enhancement, quality scoring
-- **Split**: Page-based or VLM-powered visual boundary detection
-- **Classify**: Catalog-driven classification with confidence thresholds
-- **Extract**: Catalog-driven field extraction with 12 field types
-- **Validate**: Format, cross-field, visual, business rule, completeness checks
-- **Persist**: Results stored with full audit trail
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
 
-### Enterprise Features
-- Sync and async processing modes
-- Batch processing with stop-on-failure
-- Job tracking with progress polling
-- Webhook callbacks on completion
-- Multi-tenancy support
-- Result export (JSON, CSV)
-- Analytics and cost tracking
-- Domain events for observability
+### Enterprise Ready
+- Sync and async processing modes with batch support
+- Job tracking with progress polling and webhook callbacks
+- Multi-tenancy, result export (JSON, CSV), analytics and cost tracking
 - Health and readiness endpoints
+
+</td>
+<td width="50%" valign="top">
 
 ### Hexagonal Architecture
 - All infrastructure behind Protocol-based ports
-- Swap storage, ingestion, or persistence adapters without changing business logic
+- Swap storage, ingestion, or persistence adapters without touching business logic
 - Built on pyfly's DI container with auto-configuration
 - Entry-point-based auto-discovery
 
-## Architecture
+</td>
+</tr>
+</table>
+
+## Processing Pipeline
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                        REST API Layer                               │
-│  DocumentTypeController · FieldController · ValidatorController     │
-│  JobController · ResultController · AnalyticsController · Health    │
-├─────────────────────────────────────────────────────────────────────┤
-│                     Application Services                            │
-│  CatalogService · IngestionService · PreProcessingService           │
-│  SplittingService · ClassificationService · ExtractionService       │
-│  ValidationService · ResultService · ProcessingOrchestrator         │
-├─────────────────────────────────────────────────────────────────────┤
-│                       Domain Models                                 │
-│  DocumentType · CatalogField · ValidatorDefinition                  │
-│  ProcessingJob · DocumentResult · ProcessingResult                  │
-├─────────────────────────────────────────────────────────────────────┤
-│                     Port Interfaces                                 │
-│  FileSourcePort · DocumentStoragePort · DocumentSplitterPort        │
-│  ClassifierPort · ExtractorPort · ValidatorPort · ResultStoragePort │
-├─────────────────────────────────────────────────────────────────────┤
-│                    Adapter Implementations                          │
-│  Local/URL/S3/Azure/GCS · PageBased/Visual · Format/CrossField/... │
-├─────────────────────────────────────────────────────────────────────┤
-│                   Framework Foundation                              │
-│              pyfly (DI, Web, Data, Security)                        │
-│           fireflyframework-genai (Agents, Pipeline)                 │
-└─────────────────────────────────────────────────────────────────────┘
+Ingest → Preprocess → Split → Classify → Extract → Validate → Persist
 ```
+
+| Stage | Description |
+|-------|-------------|
+| **Ingest** | Local files, URLs, S3, Azure Blob, GCS |
+| **Preprocess** | PDF to images, rotation correction, enhancement, quality scoring |
+| **Split** | Page-based or VLM-powered visual boundary detection |
+| **Classify** | Catalog-driven classification with confidence thresholds |
+| **Extract** | Catalog-driven field extraction with 12 field types |
+| **Validate** | Format, cross-field, visual, business rule, completeness checks |
+| **Persist** | Results stored with full audit trail |
 
 ## Installation
 
 ```bash
-# Core (minimal dependencies)
+# Core
 pip install fireflyframework-intellidoc
 
-# With cloud storage support
+# With cloud storage
 pip install "fireflyframework-intellidoc[s3,azure,gcs]"
 
-# With PostgreSQL persistence
+# With PostgreSQL persistence and web server
 pip install "fireflyframework-intellidoc[postgresql,web]"
 
-# With everything
+# Everything
 pip install "fireflyframework-intellidoc[all]"
 
-# Development (includes testing, linting, type-checking)
+# Development
 pip install "fireflyframework-intellidoc[dev]"
 ```
 
-### Optional Dependencies
+<details>
+<summary><strong>Optional dependencies</strong></summary>
 
 | Extra | Description |
 |-------|-------------|
@@ -128,8 +123,8 @@ pip install "fireflyframework-intellidoc[dev]"
 | `messaging` | Kafka/RabbitMQ async jobs |
 | `observability` | Prometheus metrics, tracing |
 | `security` | Authentication and RBAC |
-| `all` | All of the above |
-| `dev` | Development tools (pytest, ruff, pyright) |
+
+</details>
 
 ## Quick Start
 
@@ -204,14 +199,10 @@ curl -X POST http://localhost:8080/api/v1/intellidoc/fields \
   -H "Content-Type: application/json" \
   -d '{"code": "total_amount", "display_name": "Total Amount", "field_type": "currency", "required": true}'
 
-curl -X POST http://localhost:8080/api/v1/intellidoc/fields \
-  -H "Content-Type: application/json" \
-  -d '{"code": "vendor_name", "display_name": "Vendor Name", "field_type": "text", "required": true}'
-
 # Assign default fields to the document type
 curl -X PUT "http://localhost:8080/api/v1/intellidoc/document-types/{id}/default-fields" \
   -H "Content-Type: application/json" \
-  -d '{"field_codes": ["invoice_number", "invoice_date", "total_amount", "vendor_name"]}'
+  -d '{"field_codes": ["invoice_number", "invoice_date", "total_amount"]}'
 ```
 
 ### 5. Process a Document
@@ -226,17 +217,7 @@ curl -X POST http://localhost:8080/api/v1/intellidoc/process \
     "filename": "invoice.pdf"
   }'
 
-# Asynchronous processing
-curl -X POST http://localhost:8080/api/v1/intellidoc/process \
-  -H "Content-Type: application/json" \
-  -d '{
-    "source_type": "url",
-    "source_reference": "https://example.com/invoice.pdf",
-    "filename": "invoice.pdf",
-    "async_mode": true
-  }'
-
-# Process with custom field selection (target_schema)
+# With custom field selection (target_schema)
 curl -X POST http://localhost:8080/api/v1/intellidoc/process \
   -H "Content-Type: application/json" \
   -d '{
@@ -248,8 +229,15 @@ curl -X POST http://localhost:8080/api/v1/intellidoc/process \
     }
   }'
 
-# Poll for status
-curl http://localhost:8080/api/v1/intellidoc/jobs/{job_id}/status
+# Async mode — returns job ID for polling
+curl -X POST http://localhost:8080/api/v1/intellidoc/process \
+  -H "Content-Type: application/json" \
+  -d '{
+    "source_type": "url",
+    "source_reference": "https://example.com/invoice.pdf",
+    "filename": "invoice.pdf",
+    "async_mode": true
+  }'
 ```
 
 ### 6. Retrieve Results
@@ -258,7 +246,7 @@ curl http://localhost:8080/api/v1/intellidoc/jobs/{job_id}/status
 # Full result
 curl http://localhost:8080/api/v1/intellidoc/results/{job_id}
 
-# Extracted data only (for integrations)
+# Extracted data only
 curl http://localhost:8080/api/v1/intellidoc/results/{job_id}/extracted-data
 
 # Export as CSV
@@ -268,7 +256,7 @@ curl http://localhost:8080/api/v1/intellidoc/results/{job_id}/export?format=csv
 ## API Overview
 
 | Area | Prefix | Endpoints | Description |
-|------|--------|-----------|-------------|
+|------|--------|:---------:|-------------|
 | Document Types | `/api/v1/intellidoc/document-types` | 9 | CRUD, default fields, validator assignment |
 | Fields | `/api/v1/intellidoc/fields` | 6 | CRUD, lookup by code |
 | Validators | `/api/v1/intellidoc/validators` | 7 | CRUD, type listing, testing |
@@ -278,6 +266,36 @@ curl http://localhost:8080/api/v1/intellidoc/results/{job_id}/export?format=csv
 | Analytics | `/api/v1/intellidoc/analytics` | 5 | Summary, by-type, by-nature, cost |
 | Health | `/api/v1/intellidoc/health` | 4 | Health, readiness, config, metrics |
 | **Total** | | **43** | |
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                        REST API Layer                               │
+│  DocumentTypeController · FieldController · ValidatorController     │
+│  JobController · ResultController · AnalyticsController · Health    │
+├─────────────────────────────────────────────────────────────────────┤
+│                     Application Services                            │
+│  CatalogService · IngestionService · PreProcessingService           │
+│  SplittingService · ClassificationService · ExtractionService       │
+│  ValidationService · ResultService · ProcessingOrchestrator         │
+├─────────────────────────────────────────────────────────────────────┤
+│                       Domain Models                                 │
+│  DocumentType · CatalogField · ValidatorDefinition                  │
+│  ProcessingJob · DocumentResult · ProcessingResult                  │
+├─────────────────────────────────────────────────────────────────────┤
+│                     Port Interfaces                                 │
+│  FileSourcePort · DocumentStoragePort · DocumentSplitterPort        │
+│  ClassifierPort · ExtractorPort · ValidatorPort · ResultStoragePort │
+├─────────────────────────────────────────────────────────────────────┤
+│                    Adapter Implementations                          │
+│  Local/URL/S3/Azure/GCS · PageBased/Visual · Format/CrossField/... │
+├─────────────────────────────────────────────────────────────────────┤
+│                   Framework Foundation                              │
+│              pyfly (DI, Web, Data, Security)                        │
+│           fireflyframework-genai (Agents, Pipeline)                 │
+└─────────────────────────────────────────────────────────────────────┘
+```
 
 ## Configuration
 
@@ -299,13 +317,16 @@ See [docs/configuration.md](docs/configuration.md) for the complete reference.
 
 ## Documentation
 
-- [Architecture Guide](docs/architecture.md) — Design principles, layers, and data flow
-- [Getting Started](docs/getting-started.md) — Step-by-step tutorial
-- [API Reference](docs/api-reference.md) — Complete endpoint documentation
-- [Configuration Reference](docs/configuration.md) — All configuration properties
-- [Examples](docs/examples.md) — Invoice, identity document, batch processing examples
+| Document | Description |
+|----------|-------------|
+| [Architecture Guide](docs/architecture.md) | Design principles, layers, and data flow |
+| [Getting Started](docs/getting-started.md) | Step-by-step tutorial |
+| [API Reference](docs/api-reference.md) | Complete endpoint documentation |
+| [Configuration Reference](docs/configuration.md) | All configuration properties |
+| [Examples](docs/examples.md) | Invoice, identity document, batch processing examples |
 
-## Module Structure
+<details>
+<summary><strong>Module structure</strong></summary>
 
 ```
 fireflyframework_intellidoc/
@@ -368,6 +389,8 @@ fireflyframework_intellidoc/
     ├── events.py                  # Domain events
     └── metrics.py                 # MetricsCollector
 ```
+
+</details>
 
 ## Requirements
 
