@@ -270,31 +270,31 @@ curl http://localhost:8080/api/v1/intellidoc/results/{job_id}/export?format=csv
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                        REST API Layer                               │
-│  DocumentTypeController · FieldController · ValidatorController     │
-│  JobController · ResultController · AnalyticsController · Health    │
-├─────────────────────────────────────────────────────────────────────┤
-│                     Application Services                            │
-│  CatalogService · IngestionService · PreProcessingService           │
-│  SplittingService · ClassificationService · ExtractionService       │
-│  ValidationService · ResultService · ProcessingOrchestrator         │
-├─────────────────────────────────────────────────────────────────────┤
-│                       Domain Models                                 │
-│  DocumentType · CatalogField · ValidatorDefinition                  │
-│  ProcessingJob · DocumentResult · ProcessingResult                  │
-├─────────────────────────────────────────────────────────────────────┤
-│                     Port Interfaces                                 │
-│  FileSourcePort · DocumentStoragePort · DocumentSplitterPort        │
-│  ClassifierPort · ExtractorPort · ValidatorPort · ResultStoragePort │
-├─────────────────────────────────────────────────────────────────────┤
-│                    Adapter Implementations                          │
-│  Local/URL/S3/Azure/GCS · PageBased/Visual · Format/CrossField/... │
-├─────────────────────────────────────────────────────────────────────┤
-│                   Framework Foundation                              │
-│              pyfly (DI, Web, Data, Security)                        │
-│           fireflyframework-genai (Agents, Pipeline)                 │
-└─────────────────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────────────┐
+│                            REST API Layer                             │
+│  DocumentTypeController · FieldController · ValidatorController       │
+│  JobController · ResultController · AnalyticsController · Health      │
+├───────────────────────────────────────────────────────────────────────┤
+│                         Application Services                          │
+│  CatalogService · IngestionService · PreProcessingService             │
+│  SplittingService · ClassificationService · ExtractionService         │
+│  ValidationService · ResultService · ProcessingOrchestrator           │
+├───────────────────────────────────────────────────────────────────────┤
+│                             Domain Models                             │
+│  DocumentType · CatalogField · ValidatorDefinition                    │
+│  ProcessingJob · DocumentResult · ProcessingResult                    │
+├───────────────────────────────────────────────────────────────────────┤
+│                            Port Interfaces                            │
+│  FileSourcePort · DocumentStoragePort · DocumentSplitterPort          │
+│  ClassifierPort · ExtractorPort · ValidatorPort · ResultStoragePort   │
+├───────────────────────────────────────────────────────────────────────┤
+│                        Adapter Implementations                        │
+│  Local/URL/S3/Azure/GCS · PageBased/Visual · Format/CrossField/...   │
+├───────────────────────────────────────────────────────────────────────┤
+│                         Framework Foundation                          │
+│                    pyfly (DI, Web, Data, Security)                    │
+│                 fireflyframework-genai (Agents, Pipeline)             │
+└───────────────────────────────────────────────────────────────────────┘
 ```
 
 ## Configuration
